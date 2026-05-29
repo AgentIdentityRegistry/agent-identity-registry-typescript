@@ -207,8 +207,10 @@ export class AIRClient {
     if (opts.codeRepository !== undefined) body.code_repository = opts.codeRepository;
     if (opts.documentationUrl !== undefined) body.documentation_url = opts.documentationUrl;
     if (Object.keys(body).length === 0) {
-      // Mirror the server's 400 client-side — no wasted round-trip.
-      throw new ValidationError("updateAgent() requires at least one field to change.");
+      // Mirror the server's 400 client-side — no wasted round-trip. Reject (not
+      // throw) so the method always returns a Promise, matching the Python SDK
+      // and keeping `.catch()` chaining working as well as `await` + try/catch.
+      return Promise.reject(new ValidationError("updateAgent() requires at least one field to change."));
     }
     return this.request<UpdateResult>("PUT", `/agents/${airId}`, {
       body,

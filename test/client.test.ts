@@ -101,10 +101,10 @@ describe("AIRClient writes", () => {
     expect(body.public_key).toBe("A".repeat(43));
   });
 
-  it("updateAgent with no fields throws before any request", async () => {
+  it("updateAgent with no fields rejects before any request", async () => {
     const { fetchImpl, calls } = stub(() => ({ status: 200, body: {} }));
     const air = new AIRClient({ baseUrl: "https://test.invalid", fetch: fetchImpl });
-    expect(() => air.updateAgent("AIR-X", { agentSecret: "s" })).toThrow(ValidationError);
+    await expect(air.updateAgent("AIR-X", { agentSecret: "s" })).rejects.toBeInstanceOf(ValidationError);
     expect(calls.length).toBe(0);
   });
 
